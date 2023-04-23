@@ -4,45 +4,47 @@ import "../styles/App.css";
 const WORD_LIST = ["apple", "banana", "cherry", "grape", "orange"];
 
 function App() {
-  const [word, setWord] = useState("");
+  const [word, setWord] = useState(WORD_LIST[0]);
   const [flashWord, setFlashWord] = useState(true);
   const [userInput, setUserInput] = useState("");
   const [result, setResult] = useState("");
   const [index, setIndex] = useState(0);
-  useEffect(() => {
-    if (flashWord) {
-      setWord(WORD_LIST[index]);
-    }
-    const timer = setTimeout(() => {
-      setWord("");
 
-      setFlashWord(!true);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setFlashWord(false);
+      // console.log("hello");
+      // setWord(false);
     }, 500);
-  }, [index]);
+    return () => clearTimeout(timer);
+  }, [flashWord]);
 
   const handleInputChange = (e) => {
     setUserInput(e.target.value);
   };
+
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    if (WORD_LIST.includes(userInput.toLowerCase())) {
+    if (userInput === WORD_LIST[index]) {
+      // console.log("won");
       setResult("You won!");
     } else {
+      // console.log("lost");
       setResult("You lost!");
     }
-    setUserInput("");
   };
+
   const handleRestartClick = () => {
-    setResult("");
+    setIndex((index) => index + 1);
     setFlashWord(true);
-    setIndex((pre) => pre + 1);
+    setUserInput("");
+    setResult(null);
   };
   return (
     <div className="mini-game-container">
       <h2 className="mini-game-title">Mini Game</h2>
-      <p className="mini-game-word">{word}</p>
-      {result.length ? (
-        ""
+      {flashWord ? (
+        <p className="mini-game-word">{WORD_LIST[index]}</p>
       ) : (
         <form className="mini-game-form" onSubmit={handleFormSubmit}>
           <input
@@ -56,6 +58,8 @@ function App() {
           </button>
         </form>
       )}
+
+      {/* <p>{flashWord}</p> */}
       {result && (
         <>
           <p className="mini-game-result">{result}</p>
